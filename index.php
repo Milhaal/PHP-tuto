@@ -1,59 +1,32 @@
-<!DOCTYPE html>
+<?php
+$servername = "mysql-phpauto.alwaysdata.net";
+$username = "phpauto";
+$password = "Nitrosmp2103@";
+$dbname = "phpauto_db";
 
-<!-- VOICI DU HTML → C'est le contenu du site -->
-<html lang="en" dir="ltr" id="index">
-  <head>
-    <title>Team Roster Pro</title>
-    <meta name="description" content="Login to lead your Esport team now.">
-    <meta charset="utf-8">
-    <!-- Let browser know website is optimized for mobile -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Disable the cache to avoid versioning problems -->
-    <meta http-equiv="cache-control" content="max-age=0" />
-    <meta http-equiv="cache-control" content="no-cache" />
-    <meta http-equiv="expires" content="0" />
-  </head>
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-  <body>
-    <?php  
-      $pdo = new PDO(
-        'mysql:host=mysql-team-roster-pro.alwaysdata.net;dbname=team-roster-pro_database;',
-        '339632',
-        'Super@0Groupe!',
-        array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8')
-    );
-    $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_WARNING);
-
-
-    $sql = "SELECT * FROM PLAYER";
-    $pre = $pdo->prepare($sql);
-    $pre->execute();
-    $data = $pre->fetch(PDO::FETCH_ASSOC);
-    ?>
-
-    <h1><?php echo $data['player_name'] ?></h1>
-    <p><?php echo $data['player_bio'] ?></p>
-
-
-    <?php  
-    $sql = "SELECT * FROM SKILLS";
-    $pre = $pdo->prepare($sql);
-    $pre->execute();
-    $skills = $pre->fetchAll(PDO::FETCH_ASSOC);
-    ?>
-
-
-    <?php foreach($skills as $skill) { ?>
-      <p><?php echo $skill['skill'] ?></p>
-    <?php } ?>
-  </body>
-</html>
-
-
-<!-- VOICI DU CSS → On ajoute du style au contenu HTML -->
-<style>
-h1 {
-  color: red;
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
-</style>
+
+// SQL to fetch user and game data
+$sql = "SELECT user_name, game_name, game_details 
+        FROM User p
+        JOIN GAME ON user_id = user_id";
+
+$result = $conn->query($sql);
+
+if ( $result->num_rows < 11 || $result->num_rows > 0) {
+    // output data of each row
+    while($row = $result->fetch_assoc()) {
+        echo "User Name: " . $row["user_name"]. " <br> Game Name: " . $row["game_name"]. " <br> Details: " . $row["game_details"]. "<br><br><br>";
+    }
+} else {
+    echo "Aucun Parametres";
+}
+
+$conn->close();
+?>
